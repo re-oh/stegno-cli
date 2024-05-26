@@ -6,28 +6,27 @@ use clap::{arg, Command};
 use png::{Decoder, Encoder, BitDepth, ColorType};
 
 fn encode_data_into_png(image_path: &PathBuf, data_path: &PathBuf) -> io::Result<()> {
-    // Open the image file
+
     let mut image_file = File::open(image_path)?;
 
-    // Decode the PNG image
+
     let decoder = Decoder::new(&mut image_file);
     let mut reader = decoder.read_info()?;
     let mut image_data = vec![0; reader.output_buffer_size()];
     reader.next_frame(&mut image_data)?;
 
-    // Open the data file
+
     let mut data_file = File::open(data_path)?;
 
-    // Read the data to be encoded
+
     let mut data = Vec::new();
     data_file.read_to_end(&mut data)?;
 
-    // Check if the image has enough capacity to hold the data
+
     if data.len() * 8 > image_data.len() {
         return Err(io::Error::new(io::ErrorKind::InvalidInput, "Data too large to encode in the image"));
     }
 
-    // Embed the data into the image using LSB method
     for (i, byte) in data.iter().enumerate() {
         for bit in 0..8 {
             let image_index = i * 8 + bit;
@@ -35,7 +34,7 @@ fn encode_data_into_png(image_path: &PathBuf, data_path: &PathBuf) -> io::Result
         }
     }
 
-    // Write the modified image data back to the image file
+
     let file = File::create(image_path)?;
     let ref mut w = io::BufWriter::new(file);
 
@@ -50,16 +49,16 @@ fn encode_data_into_png(image_path: &PathBuf, data_path: &PathBuf) -> io::Result
 }
 
 fn decode_data_from_png(image_path: &PathBuf, output_path: &PathBuf) -> io::Result<()> {
-    // Open the image file
+ 
     let mut image_file = File::open(image_path)?;
 
-    // Decode the PNG image
+
     let decoder = Decoder::new(&mut image_file);
     let mut reader = decoder.read_info()?;
     let mut image_data = vec![0; reader.output_buffer_size()];
     reader.next_frame(&mut image_data)?;
 
-    // Decode the data from the image using LSB method
+
     let mut data = Vec::new();
     let mut byte = 0;
     for (i, &pixel) in image_data.iter().enumerate() {
@@ -70,7 +69,7 @@ fn decode_data_from_png(image_path: &PathBuf, output_path: &PathBuf) -> io::Resu
         }
     }
 
-    // Write the decoded data to the output file
+
     let mut output_file = File::create(output_path)?;
     output_file.write_all(&data)?;
 
