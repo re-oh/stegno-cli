@@ -1,5 +1,8 @@
 Usage: stegno-cli.exe
 
+made for my cybersecurity class, took wayyyyy to long...
+( all blame goes on me for not being able to do bitwise operations... )
+
 Commands:
 
 encode | Encodes data from the specified file into the specified PNG image
